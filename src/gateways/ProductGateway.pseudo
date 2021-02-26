@@ -1,0 +1,49 @@
+CLASS ProductGateway
+    private db
+
+    FUNCTION contructor(dbmodel)
+        db = db
+    ENDFUNCTION
+
+    FUNCTION findAll()
+        sql = "SELECT prod_id, prod_name, prod_price FROM product"
+        db->query(sql)
+        RETURN db->fetchAll()
+    ENDIF
+
+    FUNCTION findById(id)
+        sql = "SELECT prod_id, prod_name, prod_price FROM product WHERE prod_id = id"
+        db->query(sql)
+        RETURN db->fetch()
+    ENDFUNCTION
+
+    FUNCTION insert(assocArray)
+        columns = implode(", ", array_keys(assocArray))
+        values = array_values(assocArray)
+        sql = "INSERT INTO product ( columns )
+            VALUES ( values )"
+        db->query(sql)
+        RETURN
+    ENDFUNCTION
+
+    FUNCTION update(id, assocArray)
+        assignments = ""
+        foreach(assocArray as key => value)
+            assignments .= "key = value, "
+        endforeach
+        assignments = substr(assignments, 0, -2)
+        
+        sql = "UPDATE product 
+            SET assignments
+            WHERE prod_id = id"
+        db->query(sql)
+        RETURN
+    ENDFUNCTION
+
+    FUNCTION delete(id)
+        sql = "DELETE FROM product 
+            WHERE prod_id = id"
+        db->query(sql)
+    ENDFUNCTION
+
+ENDCLASS

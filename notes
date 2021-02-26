@@ -1,0 +1,2 @@
+1) I do not use PDO prepeared statement (thus ommiting prepare() and execute()) to simplify the pseudo-code and just use query. Also I don't handle PDOExceptions and not trying to catch them in connecting or any querying. 
+

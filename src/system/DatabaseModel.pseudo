@@ -1,0 +1,15 @@
+CLASS DatabaseMode 
+    private connection
+
+    FUNCTION connect(dbname, host, user, password)
+        IF connection == null THEN
+            dsn = "mysql:host=host;dbname=dbname"
+            connection = PDO(dsn, user, password)
+        ENDIF
+    ENDFUNCTION
+
+    FUNCTION getConnection
+        RETURN connection
+    ENDFUNCTION
+    
+ENDCLASS

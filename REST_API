@@ -1,0 +1,14 @@
+//return all products
+GET /public/product
+
+// return a specific product
+GET /public/product/{id}
+
+//create a new product
+POST /public/product
+
+//update an existing product
+PUT /public/product/{id}
+
+//delete an existing product
+DELETE /public/product/{id}
