@@ -1,0 +1,25 @@
+header("Access-Control-Allow-Origin: *")
+header("Content-Type: application/json; charset=UTF-8")
+header("Access-Control-Allow-Methods: OPTIONS,GET,POST,PUT,DELETE")
+
+include ProductController, DatabaseModel
+dbmodel = DatabaseModel()
+db = dbmodel->getConnection()
+
+uri = parse_url(SERVER['REQUEST_URI], PHP_URL_PATH)
+uri = explode('/', uri)
+
+IF uri[2] != 'product' THEN
+    header('HTTP/1.1 404 Not Found)
+    die()
+ENDIF
+
+prod_id = null
+IF isset(uri[3]) THEN
+    prod_id = uri[3]
+ENDIF
+
+requestMethod = SERVER['REQUEST_METHOD']
+
+controller = ProductController(db, requestMethod, prod_id)
+controller->process()

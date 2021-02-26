@@ -1,0 +1,15 @@
+rest_pseudocode/
+├── create-db-products.sql
+├── notes
+├── public
+│   └── product
+│       └── index.pseudo
+├── REST_API
+└── src
+    ├── controller
+    │   └── ProductController.pseudo
+    ├── gateways
+    │   └── ProductGateway.pseudo
+    └── system
+        └── DatabaseModel.pseudo
+

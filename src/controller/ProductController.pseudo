@@ -1,0 +1,124 @@
+class ProductController
+    private db
+    private requestMethod
+    private prod_id
+    private productGateway    
+
+    FUNCTION constructor(db, requestMethod, prod_id)
+        db=db
+        requestMethod=requestMethod
+        prod_id=prod_id
+
+        productGateway = productGateway(db)
+    ENDFUNCTION
+
+    FUNCTION process()
+        array response;
+
+        SWITCH
+            CASE 'GET':
+                IF prod_id != null
+                    response = getProduct(prod_id)
+                ELSE
+                    response = getAllProducts()
+                ENDIF
+                BREAK
+            CASE 'POST':
+                response = createProduct()
+                BREAK
+            CASE 'PUT':
+                response = updateProduct(prod_id)
+                BREAK
+            CASE 'DELETE':
+                response = deleteProduct(prod_id)
+                BREAK
+            DEFAULT:
+                response = notFound()
+            BREAK
+        ENDSWITCH
+
+        header(response['status_code'])
+        IF response['body'] != null THEN
+            echo response['body']
+        ENDIF
+    ENDFUNCTION
+
+    FUNCTION notFound()
+        response['status_code'] = 'HTTP/1.1 404 Not Found'
+        response['body'] = null
+        RETURN response
+    ENDFUNCTION
+
+    FUNCTION validateProduct(assocArray)
+        IF isset(assocArray['prod_name']) == null THEN
+            RETURN false
+        ENDIF
+        IF isset(assocArray['prod_price']) == null THEN
+            RETURN false
+        ENDIF
+        RETURN true
+    ENDFUNCTION
+
+    FUNCTION unprocessableEntity()
+        response['status_code'] =  'HTTP/1.1 422 Unprocessable Entity'
+        response['body'] = json_encode([
+            'error' => 'Invalid input'
+        ])
+        RETURN response
+    ENDFUNCTION
+
+    FUNCTION getProduct(id)
+        result = productGateway->findById(id)
+        response['status_code'] = 'HTTP/1.1 200 OK'
+        response['body'] = json_encode(result)
+        return response
+    ENDIF
+
+    FUNCTION getAllProducts()
+        result = productGateway->findAll()
+        response['status_code'] = 'HTTP/1.1 200 OK' 
+        response['body'] = json_encode(result)
+        return response
+    ENDFUNCTION
+
+    FUNCTION createProduct()
+        input = json_decode(file_get_contents('php://input'), true)
+
+        if validateProduct(input) == false THEN 
+            RETURN unprocessableEntity()
+        ENDIF
+
+        productGateway->insert(input)
+        response['status_code'] = 'HTTP/1.1 201 Created'
+        response['body'] = null
+        return response
+    ENDFUNCTION
+
+    FUNCTION updateProduct(id)
+        result = productGateway->findById(id)
+        IF empty(result) THEN
+            RETURN notFound()
+        ENDIF
+        input = json_decode(file_get_contents('php://input'), true)
+        IF validateProduct(input) == false THEN
+            RETURN unprocessableEntity()
+        ENDIF
+
+        validateProduct->update(id, input)
+        response['status_code'] = 'HTTP/1.1 200 OK'
+        response['body'] = null
+        return response
+    ENDFUNCTION
+
+    FUNCTION deleteProduct(id)
+        result = productGateway->findById(id)
+        IF empty(result) THEN
+            RETURN notFound()
+        ENDIF
+        productGateway->delete(id)
+        response['status_code'] = 'HTTP/1.1 200 OK'
+        response['body'] = null
+        return response
+    ENDFUNCTION
+
+ENDCLASS
